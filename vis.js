@@ -18,10 +18,6 @@ var colors = {
         border: "black",
         background: "white"
     },
-    constraint: {
-        border: "black",
-        background: "#ffaa00"
-    },
     ontology: {
         border: "maroon",
         background: "#ef5555"
@@ -58,12 +54,10 @@ function getLabel(nodeData) {
         return nodeData.value.substring(0, 50);
     } else if (
             nodeData.type === "CASTING" ||
-            nodeData.type === "ASSERTION" ||
-            nodeData.type.indexOf("CONSTRAINT") > -1) {
-        return '{' + nodeData.isa + '}';
+            nodeData.type === "RELATION") {
+        return nodeData.isa;
     } else if (nodeData.itemIdentifier !== undefined) {
-        var split = nodeData.itemIdentifier.split(/[\/#]/);
-        return split[split.length - 1];
+        return nodeData.itemIdentifier;
     } else {
         return nodeData.type;
     }
@@ -72,12 +66,10 @@ function getLabel(nodeData) {
 function getColor(nodeData) {
     var color;
 
-    if (nodeData.type === "CONCEPT_INSTANCE") {
+    if (nodeData.type === "CONCEPT_INSTANCE" || nodeData.type === "RESOURCE") {
         color = colors.data;
-    } else if (nodeData.type === "CASTING" || nodeData.type === "ASSERTION") {
+    } else if (nodeData.type === "CASTING" || nodeData.type === "RELATION") {
         color = colors.relation;
-    } else if  (nodeData.type.indexOf("CONSTRAINT") > -1){
-        color = colors.constraint;
     } else {
         color = colors.ontology;
     }
@@ -95,7 +87,8 @@ function getColor(nodeData) {
 function getShape(nodeData) {
     if (
         nodeData.type === "CONCEPT_INSTANCE" ||
-        nodeData.type === "ASSERTION" ||
+        nodeData.type === "RESOURE" ||
+        nodeData.type === "RELATION" ||
         nodeData.type === "CASTING"
     ) {
         return "ellipse";
@@ -111,12 +104,6 @@ function getHref(nodeData) {
 function addNode(nodeData) {
     href = getHref(nodeData);
     if (!(href in nodeVisDict)) {
-        // If this is a constraint, do nothing
-        var showConstraints = $("#show-constraints").is(":checked");
-        if (!showConstraints && nodeData.type.indexOf("CONSTRAINT") > -1) {
-            return;
-        }
-
         nodeVis = {
             id: nodeData.links[0].href,
             label: getLabel(nodeData),
@@ -258,8 +245,7 @@ function get(url, callback) {
 
 
 // Load concept-type initially
-var prefix = "http://mindmaps.io/";
-var conceptType = prefix + "concept-type";
+var conceptType = "concept-type";
 var params = $.param({"itemIdentifier": conceptType});
 get("http://localhost:8080/graph/concept/?" + params, addNode);
 
@@ -296,7 +282,7 @@ network.on("oncontext", function (params) {
 // Search by item identifier and value
 $("#search-form").submit(function () {
     var value = $("#search").val();
-    var params = $.param({"itemIdentifier": prefix + value});
+    var params = $.param({"itemIdentifier": value});
     get("http://localhost:8080/graph/concept/?" + params, addNode);
     get("http://localhost:8080/graph/concept/" + value, function (data) {
         console.log(data);
