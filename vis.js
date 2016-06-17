@@ -10,20 +10,37 @@ var focusedId = null;
 var loadStuff = false;
 
 var colors = {
-    data: {
-        border: "#2B7CE9",
-        background: "#97C2FC"
+    conceptInstance : {
+        border: "#61BC60",
+        background : "#77dd77"
     },
-    relation: {
-        border: "black",
-        background: "white"
+    conceptType : {
+        border: "#008B5D",
+        background: "#3CB68E"
     },
-    ontology: {
-        border: "maroon",
-        background: "#ef5555"
+    relation : {
+        border: "#FFA81C",
+        background: "#FFBF57"
     },
-    highlight: {
-        border: "black"
+    relationType : {
+        border: "#F73882",
+        background: "#FA72A7"
+    },
+    resource : {
+        border: "#46A5C7",
+        background: "#5bc2e7"
+    },
+    resourceType : {
+        border: "#4854ED",
+        background: "#747DF2"
+    },
+    roleType : {
+        border: "#ffb96d",
+        background: "#ffb96d"
+    },
+    highlight : {
+        border: "#77dd77",
+        background: "#77dd77"
     }
 }
 
@@ -66,12 +83,20 @@ function getLabel(nodeData) {
 function getColor(nodeData) {
     var color;
 
-    if (nodeData.type === "CONCEPT_INSTANCE" || nodeData.type === "RESOURCE") {
-        color = colors.data;
-    } else if (nodeData.type === "CASTING" || nodeData.type === "RELATION") {
+    if (nodeData.type === "CONCEPT_INSTANCE"){
+        color = colors.conceptInstance;
+    } else if(nodeData.type === "CONCEPT_TYPE") {
+        color = colors.conceptType;
+    } else if(nodeData.type === "RELATION") {
         color = colors.relation;
-    } else {
-        color = colors.ontology;
+    } else if(nodeData.type === "RELATION_TYPE") {
+        color = colors.relationType;
+    } else if(nodeData.type === "RESOURCE") {
+        color = colors.resource;
+    } else if(nodeData.type === "RESOURCE_TYPE") {
+        color = colors.resourceType;
+    } else if (nodeData.type === "ROLE_TYPE") {
+        color = colors.roleType;
     }
 
     return {
@@ -148,7 +173,8 @@ function addEdge(fromId, toId, type) {
     var edgeVis = {
         from: fromId,
         to: toId,
-        label: type
+        label: type,
+        color: "#000000"
     };
 
     if (!(edgeVis.label in edgeDict)) {
@@ -161,6 +187,7 @@ function addEdge(fromId, toId, type) {
         edgeDict[edgeVis.label][edgeVis.from][edgeVis.to] = edgeVis;
         edges.add(edgeVis);
     }
+
 }
 
 function addEdges(nodeData) {
