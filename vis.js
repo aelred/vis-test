@@ -169,14 +169,17 @@ function removeNode(nodeId) {
     delete nodeVisDict[nodeId];
 }
 
-function addEdge(fromId, toId, type) {
+function addEdge(fromNode, toNode, type) {
     var edgeVis = {
-        from: fromId,
-        to: toId,
+        from: getHref(fromNode),
+        to: getHref(toNode),
         label: type,
-        color: "#000000"
+        color: {
+            color: "#000000",
+            highlight: getColor(fromNode).highlight.border  
+        }
     };
-
+console.log(edgeVis);
     if (!(edgeVis.label in edgeDict)) {
         edgeDict[edgeVis.label] = {};
     }
@@ -194,7 +197,7 @@ function addEdges(nodeData) {
     $.each(nodeData.out, function(i, edge) {
         addNode(edge.source);
         addNode(edge.target);
-        addEdge(getHref(edge.source), getHref(edge.target), edge.type);
+        addEdge(edge.source, edge.target, edge.type);
     });
 
     // Get only a few nodes if too many
@@ -206,7 +209,7 @@ function addEdges(nodeData) {
     $.each(inNodes, function(i, edge) {
         addNode(edge.source);
         addNode(edge.target);
-        addEdge(getHref(edge.source), getHref(edge.target), edge.type);
+        addEdge(edge.source, edge.target, edge.type);
     });
 }
 
