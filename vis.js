@@ -10,20 +10,37 @@ var focusedId = null;
 var loadStuff = false;
 
 var colors = {
-    data: {
-        border: "#2B7CE9",
-        background: "#97C2FC"
+    conceptInstance : {
+        border: "#61BC60",
+        background : "#77dd77"
     },
-    relation: {
-        border: "black",
-        background: "white"
+    conceptType : {
+        border: "#008B5D",
+        background: "#3CB68E"
     },
-    ontology: {
-        border: "maroon",
-        background: "#ef5555"
+    relation : {
+        border: "#FFA81C",
+        background: "#FFBF57"
     },
-    highlight: {
-        border: "black"
+    relationType : {
+        border: "#F73882",
+        background: "#FA72A7"
+    },
+    resource : {
+        border: "#46A5C7",
+        background: "#5bc2e7"
+    },
+    resourceType : {
+        border: "#4854ED",
+        background: "#747DF2"
+    },
+    roleType : {
+        border: "#ffb96d",
+        background: "#ffb96d"
+    },
+    highlight : {
+        border: "#77dd77",
+        background: "#77dd77"
     }
 }
 
@@ -66,12 +83,20 @@ function getLabel(nodeData) {
 function getColor(nodeData) {
     var color;
 
-    if (nodeData.type === "CONCEPT_INSTANCE" || nodeData.type === "RESOURCE") {
-        color = colors.data;
-    } else if (nodeData.type === "CASTING" || nodeData.type === "RELATION") {
+    if (nodeData.type === "CONCEPT_INSTANCE"){
+        color = colors.conceptInstance;
+    } else if(nodeData.type === "CONCEPT_TYPE") {
+        color = colors.conceptType;
+    } else if(nodeData.type === "RELATION") {
         color = colors.relation;
-    } else {
-        color = colors.ontology;
+    } else if(nodeData.type === "RELATION_TYPE") {
+        color = colors.relationType;
+    } else if(nodeData.type === "RESOURCE") {
+        color = colors.resource;
+    } else if(nodeData.type === "RESOURCE_TYPE") {
+        color = colors.resourceType;
+    } else if (nodeData.type === "ROLE_TYPE") {
+        color = colors.roleType;
     }
 
     return {
@@ -144,13 +169,17 @@ function removeNode(nodeId) {
     delete nodeVisDict[nodeId];
 }
 
-function addEdge(fromId, toId, type) {
+function addEdge(fromNode, toNode, type) {
     var edgeVis = {
-        from: fromId,
-        to: toId,
-        label: type
+        from: getHref(fromNode),
+        to: getHref(toNode),
+        label: type,
+        color: {
+            color: "#000000",
+            highlight: getColor(fromNode).highlight.border  
+        }
     };
-
+console.log(edgeVis);
     if (!(edgeVis.label in edgeDict)) {
         edgeDict[edgeVis.label] = {};
     }
@@ -161,13 +190,14 @@ function addEdge(fromId, toId, type) {
         edgeDict[edgeVis.label][edgeVis.from][edgeVis.to] = edgeVis;
         edges.add(edgeVis);
     }
+
 }
 
 function addEdges(nodeData) {
     $.each(nodeData.out, function(i, edge) {
         addNode(edge.source);
         addNode(edge.target);
-        addEdge(getHref(edge.source), getHref(edge.target), edge.type);
+        addEdge(edge.source, edge.target, edge.type);
     });
 
     // Get only a few nodes if too many
@@ -179,7 +209,7 @@ function addEdges(nodeData) {
     $.each(inNodes, function(i, edge) {
         addNode(edge.source);
         addNode(edge.target);
-        addEdge(getHref(edge.source), getHref(edge.target), edge.type);
+        addEdge(edge.source, edge.target, edge.type);
     });
 }
 
