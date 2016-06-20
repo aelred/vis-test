@@ -38,6 +38,10 @@ var colors = {
         border: "#ffb96d",
         background: "#ffb96d"
     },
+    ruleType : {
+        border: "#ffb96d",
+        background: "#ffb96d"
+    },
     highlight : {
         border: "#77dd77",
         background: "#77dd77"
@@ -97,7 +101,11 @@ function getColor(nodeData) {
         color = colors.resourceType;
     } else if (nodeData.type === "ROLE_TYPE") {
         color = colors.roleType;
+    } else if (nodeData.type === "RULE_TYPE") {
+        color = colors.ruleType;
     }
+    else{color = colors.conceptInstance;}
+ 
 
     return {
         border: color.border,
