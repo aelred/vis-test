@@ -42,6 +42,10 @@ var colors = {
         border: "#ffb96d",
         background: "#ffb96d"
     },
+    metaType : {
+        border: "#A15FD1",
+        background: "#BF77F3"
+    },
     highlight : {
         border: "#77dd77",
         background: "#77dd77"
@@ -87,9 +91,9 @@ function getLabel(nodeData) {
 function getColor(nodeData) {
     var color;
 
-    if (nodeData.type === "CONCEPT_INSTANCE"){
+    if (nodeData.type === "ENTITY"){
         color = colors.conceptInstance;
-    } else if(nodeData.type === "CONCEPT_TYPE") {
+    } else if(nodeData.type === "ENTITY_TYPE") {
         color = colors.conceptType;
     } else if(nodeData.type === "RELATION") {
         color = colors.relation;
@@ -103,6 +107,8 @@ function getColor(nodeData) {
         color = colors.roleType;
     } else if (nodeData.type === "RULE_TYPE") {
         color = colors.ruleType;
+    } else if (nodeData.type === "TYPE"){
+        color = colors.metaType;
     }
     else{color = colors.conceptInstance;}
  
@@ -283,7 +289,7 @@ function get(url, callback) {
 
 
 // Load concept-type initially
-var conceptType = "concept-type";
+var conceptType = "mm-type";
 var params = $.param({"itemIdentifier": conceptType});
 get("http://localhost:8080/graph/concept/?" + params, addNode);
 
