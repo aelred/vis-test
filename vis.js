@@ -289,7 +289,7 @@ function get(url, callback) {
 
 
 // Load concept-type initially
-var conceptType = "mm-type";
+var conceptType = "type";
 var params = $.param({"itemIdentifier": conceptType});
 get("http://localhost:8080/graph/concept/?" + params, addNode);
 
