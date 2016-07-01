@@ -187,13 +187,13 @@ function addEdge(fromNode, toNode, type) {
     var edgeVis = {
         from: getHref(fromNode),
         to: getHref(toNode),
-        label: type,
+        label: type.toLowerCase().replace("_","-"),
         color: {
             color: "#000000",
             highlight: getColor(fromNode).highlight.border  
         }
     };
-console.log(edgeVis);
+
     if (!(edgeVis.label in edgeDict)) {
         edgeDict[edgeVis.label] = {};
     }
