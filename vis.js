@@ -67,11 +67,9 @@ var options = {
         }
     },
     physics: {
-        solver: "forceAtlas2Based"
+        solver: "forceAtlas2Based",
     }
 };
-var network = new vis.Network(container, vis_data, options);
-
 
 // Functions on graph data
 function getLabel(nodeData) {
@@ -111,7 +109,6 @@ function getColor(nodeData) {
         color = colors.metaType;
     }
     else{color = colors.conceptInstance;}
- 
 
     return {
         border: color.border,
@@ -126,7 +123,7 @@ function getColor(nodeData) {
 function getShape(nodeData) {
     if (
         nodeData.type === "CONCEPT_INSTANCE" ||
-        nodeData.type === "RESOURE" ||
+        nodeData.type === "RESOURCE" ||
         nodeData.type === "RELATION" ||
         nodeData.type === "CASTING"
     ) {
@@ -148,28 +145,8 @@ function addNode(nodeData) {
             label: getLabel(nodeData),
             color: getColor(nodeData),
             selected: false,
-            shape: getShape(nodeData)
+            shape: getShape(nodeData),
         };
-
-        // Stick an image right on a node!
-        if (
-            nodeData.value !== undefined &&
-            (
-                nodeData.value.endsWith(".jpg") ||
-                nodeData.value.endsWith(".png")
-            )
-        ) {
-            var imgUrl = nodeData.value;
-            if (!imgUrl.startsWith("http://")) {
-                imgUrl = "http://" + imgUrl;
-            }
-
-            nodeVis.label = undefined;
-            nodeVis.image = imgUrl;
-            nodeVis.shape = "circularImage";
-            nodeVis.size = 35;
-            nodeVis.color.border = colors.highlight.border;
-        }
 
         nodeVisDict[href] = nodeVis;
         nodeDataDict[href] = nodeData;
@@ -187,13 +164,13 @@ function addEdge(fromNode, toNode, type) {
     var edgeVis = {
         from: getHref(fromNode),
         to: getHref(toNode),
-        label: type,
+        label: type.toLowerCase().replace("_","-"),
         color: {
             color: "#000000",
             highlight: getColor(fromNode).highlight.border  
         }
     };
-console.log(edgeVis);
+
     if (!(edgeVis.label in edgeDict)) {
         edgeDict[edgeVis.label] = {};
     }
@@ -204,7 +181,6 @@ console.log(edgeVis);
         edgeDict[edgeVis.label][edgeVis.from][edgeVis.to] = edgeVis;
         edges.add(edgeVis);
     }
-
 }
 
 function addEdges(nodeData) {
@@ -287,11 +263,10 @@ function get(url, callback) {
     }
 }
 
-
-// Load concept-type initially
-var conceptType = "type";
-var params = $.param({"itemIdentifier": conceptType});
-get("http://localhost:8080/graph/concept/?" + params, addNode);
+// declare network and define actions
+var network = new vis.Network(container, vis_data, options);
+network.fit();
+network.moveTo({scale: 2})
 
 network.on("click", function (params) {
     if (params.nodes.length !== 0) {
@@ -323,6 +298,12 @@ network.on("oncontext", function (params) {
     }
 });
 
+// Load concept-type initially
+var conceptType = "type";
+var params = $.param({"itemIdentifier": conceptType});
+get("http://localhost:8080/graph/concept/?" + params, addNode);
+
+// bottom buttons
 // Search by item identifier and value
 $("#search-form").submit(function () {
     var value = $("#search").val();
