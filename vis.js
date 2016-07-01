@@ -68,10 +68,7 @@ var options = {
     },
     physics: {
         solver: "forceAtlas2Based"
-    }
-};
-var network = new vis.Network(container, vis_data, options);
-
+    }};
 
 // Functions on graph data
 function getLabel(nodeData) {
@@ -150,26 +147,6 @@ function addNode(nodeData) {
             selected: false,
             shape: getShape(nodeData)
         };
-
-        // Stick an image right on a node!
-        if (
-            nodeData.value !== undefined &&
-            (
-                nodeData.value.endsWith(".jpg") ||
-                nodeData.value.endsWith(".png")
-            )
-        ) {
-            var imgUrl = nodeData.value;
-            if (!imgUrl.startsWith("http://")) {
-                imgUrl = "http://" + imgUrl;
-            }
-
-            nodeVis.label = undefined;
-            nodeVis.image = imgUrl;
-            nodeVis.shape = "circularImage";
-            nodeVis.size = 35;
-            nodeVis.color.border = colors.highlight.border;
-        }
 
         nodeVisDict[href] = nodeVis;
         nodeDataDict[href] = nodeData;
@@ -287,11 +264,8 @@ function get(url, callback) {
     }
 }
 
-
-// Load concept-type initially
-var conceptType = "type";
-var params = $.param({"itemIdentifier": conceptType});
-get("http://localhost:8080/graph/concept/?" + params, addNode);
+// declare network and define actions
+var network = new vis.Network(container, vis_data, options);
 
 network.on("click", function (params) {
     if (params.nodes.length !== 0) {
@@ -323,6 +297,12 @@ network.on("oncontext", function (params) {
     }
 });
 
+// Load concept-type initially
+var conceptType = "type";
+var params = $.param({"itemIdentifier": conceptType});
+get("http://localhost:8080/graph/concept/?" + params, addNode);
+
+// bottom buttons
 // Search by item identifier and value
 $("#search-form").submit(function () {
     var value = $("#search").val();
