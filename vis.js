@@ -67,8 +67,9 @@ var options = {
         }
     },
     physics: {
-        solver: "forceAtlas2Based"
-    }};
+        solver: "forceAtlas2Based",
+    }
+};
 
 // Functions on graph data
 function getLabel(nodeData) {
@@ -108,7 +109,6 @@ function getColor(nodeData) {
         color = colors.metaType;
     }
     else{color = colors.conceptInstance;}
- 
 
     return {
         border: color.border,
@@ -123,7 +123,7 @@ function getColor(nodeData) {
 function getShape(nodeData) {
     if (
         nodeData.type === "CONCEPT_INSTANCE" ||
-        nodeData.type === "RESOURE" ||
+        nodeData.type === "RESOURCE" ||
         nodeData.type === "RELATION" ||
         nodeData.type === "CASTING"
     ) {
@@ -145,7 +145,7 @@ function addNode(nodeData) {
             label: getLabel(nodeData),
             color: getColor(nodeData),
             selected: false,
-            shape: getShape(nodeData)
+            shape: getShape(nodeData),
         };
 
         nodeVisDict[href] = nodeVis;
@@ -181,7 +181,6 @@ function addEdge(fromNode, toNode, type) {
         edgeDict[edgeVis.label][edgeVis.from][edgeVis.to] = edgeVis;
         edges.add(edgeVis);
     }
-
 }
 
 function addEdges(nodeData) {
@@ -266,6 +265,8 @@ function get(url, callback) {
 
 // declare network and define actions
 var network = new vis.Network(container, vis_data, options);
+network.fit();
+network.moveTo({scale: 2})
 
 network.on("click", function (params) {
     if (params.nodes.length !== 0) {
